@@ -15,6 +15,10 @@ class Snake():
 		self.nextfood()
 		self.move_right()
 
+	def load_from(self,str):
+		brain = np.load(str)
+		self.init_with(brain[0],brain[1],brain[2],brain[3],brain[4],brain[5])
+
 	def init_with(self,w1,b1,w2,b2,w3,b3):
 		#self.W0 = w0
 		#self.B0 = b0
@@ -155,13 +159,19 @@ class Snake():
 	def MOVE(self):
 		if(self.left_step==1):
 			self.dead = True
-		if(self.dead):
-			return
+			self.deadReason = 'time out'
 		self.lifetime+=1
 		self.head[0] += self.V_x
 		self.head[1] += self.V_y
-		if(self.CollisionWall(self.head) or self.CollisionSelf(self.head)):
+		if self.CollisionWall(self.head):
+			self.deadReason = 'collisionWall'
 			self.dead = True
+		if self.CollisionSelf(self.head):
+			self.deadReason = 'collisionSelf'
+			self.dead = True
+		
+		if(self.dead):
+			return
 
 		if(self.CollisionFood(self.head)):
 			#eat
